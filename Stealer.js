@@ -1,10 +1,9 @@
-import {readFileSync, writeFileSync, existsSync, mkdirSync} from "node:fs";
+import {writeFileSync, existsSync, mkdirSync} from "node:fs";
 
 export class Stealer {
     static expression = /([^"]+)\.png/g;
     static tiers = ["bronze", "silver", "gold", "platinum"];
     static url = "https://socialclub.rockstargames.com/games/gtav/career/awardsajax";
-    static urlFallbackFile = "./gta5awards.html";
     static options = {
         method: "GET",
         headers: {
@@ -39,15 +38,9 @@ export class Stealer {
     }
     
     async GetHtml() {
-        try {
-            let result = await fetch(Stealer.url, Stealer.options);
+        let result = await fetch(Stealer.url, Stealer.options);
 
-            if (!result.ok || result.status !== 200) throw new Error("API Problem.");
-
-            return await result.text();
-        } catch (error) {
-            return readFileSync(Stealer.urlFallbackFile, { encoding: 'utf8' });
-        }
+        return await result.text();
     }
 
     GetPngsOutOfHtml() {
