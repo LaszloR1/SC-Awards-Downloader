@@ -23,8 +23,9 @@ export class Stealer {
         this.CreateFoldersIfNotExist()
         this.html = await this.GetHtml();
         this.pngs = await this.GetPngsOutOfHtml();
-        
-        console.log(`Found ${this.pngs.length} images! \n`);
+        this.pngs.push("KillACheater.png"); //Beta Award
+
+        console.log(`Found ${this.pngs.length} images!`);
         
         await this.DownloadThemAll();
     }
@@ -53,19 +54,31 @@ export class Stealer {
     }
     
     async DownloadThemAll() {
+        let n = 0;
+        let max = this.pngs.length * Stealer.tiers.length;
+        let skipped = 0;
+
+        console.log(`Starting the download of ${max} images!`);
+
         for (const png of this.pngs) {
             for (const tier of Stealer.tiers) {
+                n++;
+
                 let result = await fetch(`https://s.rsg.sc/sc/images/games/GTAV/multiplayer/award/${tier}/${png}`);
-                //let buffer = Buffer.from(await result.blob(), "binary");
-                let buffer = await result.arrayBuffer();
+
+                let buffer = Buffer.from(await result.arrayBuffer());
                 let location = `./awards/${tier}/${png}`;
-                
-                writeFileSync(location, buffer, "binary");
-                
-                console.log(`Saved: ${location} \n`);
-                break;
+
+                if (result.ok) {
+                    console.log(`Saved: ${location}! (${n}/${max})`);
+                    writeFileSync(location, buffer);
+                } else {
+                    console.log(`Skipping: ${location} (${n}/${max})`);
+                    skipped++;
+                }
             }
-            break;
         }
+
+        console.log(`Done! Downloaded: ${n-skipped},  Skipped: ${skipped}`);
     }
 }
