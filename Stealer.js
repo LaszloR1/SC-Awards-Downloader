@@ -31,8 +31,10 @@ export class Stealer {
     }
     
     CreateFoldersIfNotExist() {
-        for (const folder of Stealer.tiers) {
-            if (!existsSync(`./awards/${folder}`)) mkdirSync(`./awards/${folder}`);
+        let folders = Stealer.tiers.map(tier => tier = `./awards/${tier}`);
+
+        for (const folder of ["./awards", ...folders]) {
+            if (!existsSync(folder)) mkdirSync(folder);
         }
     }
     
